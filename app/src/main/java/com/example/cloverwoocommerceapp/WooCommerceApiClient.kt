@@ -1,7 +1,8 @@
 package com.example.cloverwoocommerceapp
 
 import retrofit2.*
-//import retrofit2.Retrofit
+
+import okhttp3.OkHttpClient
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -13,17 +14,39 @@ class WooCommerceApiClient {
         retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+
+
+            .client(
+                OkHttpClient.Builder().addInterceptor { chain ->
+                    val original = chain.request()
+                    val originalHttpUrl = original.url
+
+                    val url = originalHttpUrl.newBuilder()
+                        .addQueryParameter("consumer_key", CONSUMER_KEY)
+                        .addQueryParameter("consumer_secret", CONSUMER_SECRET)
+                        .build()
+
+                    val requestBuilder = original.newBuilder().url(url)
+                    val request = requestBuilder.build()
+                    chain.proceed(request)
+
+                }.build()
+            )
+
             .build()
     }
 
-    fun getCustomerStoreCreditBalance(phoneNumber: String?, callback: Callback<Customer>?) {
+
+
+    fun getCustomerStoreCreditBalance(phoneNumber: String?, callback: Callback<List<Customer>>) {
         val call = retrofit.create(WooCommerceApi::class.java).getCustomerByPhoneNumber(phoneNumber)
         call.enqueue(callback)
     }
 
     internal interface WooCommerceApi {
         @GET("customers")
-        fun getCustomerByPhoneNumber(@Query("phone") phoneNumber: String?): Call<Customer>
+
+        fun getCustomerByPhoneNumber(@Query("phone") phoneNumber: String?): Call<List<Customer>>
     }
 
     companion object {

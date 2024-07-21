@@ -8,11 +8,25 @@
     android:gravity="center"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textView"
+
+    <EditText
+        android:id="@+id/phone_number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter phone number"
+        android:inputType="phone" />
+
+    <Button
+        android:id="@+id/search_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello, World!" />
+        android:text="Search" />
+
+    <TextView
+        android:id="@+id/result_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Store credit balance will be displayed here" />
 
     <!-- Add more UI components as needed -->
 
