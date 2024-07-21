@@ -14,8 +14,7 @@ class WooCommerceApiClient {
     private val retrofit: Retrofit
 
     init {
-        val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.BODY
+
 
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
@@ -31,7 +30,7 @@ class WooCommerceApiClient {
                 val request = requestBuilder.build()
                 chain.proceed(request)
             }
-            .addInterceptor(logging)
+
             .build()
 
         retrofit = Retrofit.Builder()
