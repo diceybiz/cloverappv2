@@ -4,6 +4,7 @@ import retrofit2.*
 import okhttp3.OkHttpClient
 import okhttp3.Interceptor
 import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -13,34 +14,32 @@ class WooCommerceApiClient {
     private val retrofit: Retrofit
 
     init {
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val original = chain.request()
+                val originalHttpUrl = original.url
+
+                val url = originalHttpUrl.newBuilder()
+                    .addQueryParameter("consumer_key", CONSUMER_KEY)
+                    .addQueryParameter("consumer_secret", CONSUMER_SECRET)
+                    .build()
+
+                val requestBuilder = original.newBuilder().url(url)
+                val request = requestBuilder.build()
+                chain.proceed(request)
+            }
+            .addInterceptor(logging)
+            .build()
+
         retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-
-
-            .client(
-                OkHttpClient.Builder().addInterceptor { chain ->
-                    val original = chain.request()
-                    val originalHttpUrl = original.url
-
-                    val url = originalHttpUrl.newBuilder()
-                        .addQueryParameter("consumer_key", CONSUMER_KEY)
-                        .addQueryParameter("consumer_secret", CONSUMER_SECRET)
-
-                        .build()
-                        .addInterceptor(LoggingInterceptor())
-
-                    val requestBuilder = original.newBuilder().url(url)
-                    val request = requestBuilder.build()
-                    chain.proceed(request)
-
-                }.build()
-            )
-
+            .client(client)
             .build()
     }
-
-
 
     fun getCustomerStoreCreditBalance(phoneNumber: String?, callback: Callback<List<Customer>>) {
         val call = retrofit.create(WooCommerceApi::class.java).getCustomerByPhoneNumber(phoneNumber)
@@ -49,7 +48,6 @@ class WooCommerceApiClient {
 
     internal interface WooCommerceApi {
         @GET("customers")
-
         fun getCustomerByPhoneNumber(@Query("phone") phoneNumber: String?): Call<List<Customer>>
     }
 

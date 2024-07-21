@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 // Log the raw JSON response body
 
 
-                val rawJsonResponse = response.raw().body()?.string()
+                val rawJsonResponse = response.raw().body?.string()
                 Log.d("MainActivity", "Raw JSON response body: $rawJsonResponse")
                 if (customers != null && customers.isNotEmpty()) {
                     val customer = customers[0]
