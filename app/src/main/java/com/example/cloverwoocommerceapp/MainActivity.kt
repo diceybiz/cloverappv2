@@ -1,5 +1,6 @@
 package com.example.cloverwoocommerceapp
 
+import com.google.gson.Gson
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -44,8 +45,12 @@ class MainActivity : AppCompatActivity() {
                 Log.d("MainActivity", "Response code: ${response.code()}")
 
 
-                val responseBody = response.body()
-                Log.d("MainActivity", "Full response body: $responseBody")
+
+                // Log the raw JSON response body
+
+
+                val rawJsonResponse = response.raw().body()?.string()
+                Log.d("MainActivity", "Raw JSON response body: $rawJsonResponse")
                 if (customers != null && customers.isNotEmpty()) {
                     val customer = customers[0]
                     val storeCreditBalance = customer.storeCreditBalance ?: "No store credit available"

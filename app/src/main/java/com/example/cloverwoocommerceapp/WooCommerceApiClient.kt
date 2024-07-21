@@ -1,8 +1,10 @@
 package com.example.cloverwoocommerceapp
 
 import retrofit2.*
-
 import okhttp3.OkHttpClient
+import okhttp3.Interceptor
+import okhttp3.Response
+import java.io.IOException
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -24,7 +26,9 @@ class WooCommerceApiClient {
                     val url = originalHttpUrl.newBuilder()
                         .addQueryParameter("consumer_key", CONSUMER_KEY)
                         .addQueryParameter("consumer_secret", CONSUMER_SECRET)
+
                         .build()
+                        .addInterceptor(LoggingInterceptor())
 
                     val requestBuilder = original.newBuilder().url(url)
                     val request = requestBuilder.build()
