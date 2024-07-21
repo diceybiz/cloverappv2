@@ -51,7 +51,8 @@ class WooCommerceApiClient {
     }
 
     fun insertNewTransaction(customerId: Int, amount: String, type: String, callback: Callback<Transaction>) {
-        val transaction = Transaction(amount = amount, type = type)
+
+        val transaction = Transaction(amount = amount, type = type, note = "Store credit update")
         val call = retrofit.create(WooCommerceApi::class.java).insertNewTransaction(customerId, transaction)
         call.enqueue(callback)
     }
@@ -66,6 +67,9 @@ class WooCommerceApiClient {
     data class Transaction(
         @SerializedName("amount")
         val amount: String,
+
+        @SerializedName("note")
+        val note: String,
 
         @SerializedName("type")
         val type: String

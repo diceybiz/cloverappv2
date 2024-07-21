@@ -85,7 +85,9 @@ class MainActivity : AppCompatActivity() {
                 val customers = response.body()
                 if (customers != null && customers.isNotEmpty()) {
                     val customer = customers[0]
+
                     val type = if (isAdd) "credit" else "debit"
+                    val note = if (isAdd) "Store credit added" else "Store credit deducted"
                     apiClient.insertNewTransaction(customer.id, amount.toString(), type, object : Callback<Transaction> {
                         override fun onResponse(
                             call: Call<Transaction>,
