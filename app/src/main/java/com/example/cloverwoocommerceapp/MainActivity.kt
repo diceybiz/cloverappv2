@@ -88,7 +88,9 @@ class MainActivity : AppCompatActivity() {
 
                     val type = if (isAdd) "credit" else "debit"
                     val note = if (isAdd) "Store credit added" else "Store credit deducted"
-                    apiClient.insertNewTransaction(customer.id, amount.toString(), type, object : Callback<Transaction> {
+
+
+                    apiClient.insertNewTransaction(customer.id, amount.toString(), type, note, object : Callback<Transaction> {
                         override fun onResponse(
                             call: Call<Transaction>,
                             response: Response<Transaction>

@@ -50,9 +50,11 @@ class WooCommerceApiClient {
         call.enqueue(callback)
     }
 
-    fun insertNewTransaction(customerId: Int, amount: String, type: String, callback: Callback<Transaction>) {
 
-        val transaction = Transaction(amount = amount, type = type, note = "Store credit update")
+    fun insertNewTransaction(customerId: Int, amount: String, type: String, note: String, callback: Callback<Transaction>) {
+
+
+        val transaction = Transaction(amount = amount, type = type, note = note)
         val call = retrofit.create(WooCommerceApi::class.java).insertNewTransaction(customerId, transaction)
         call.enqueue(callback)
     }
