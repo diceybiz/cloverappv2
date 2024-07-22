@@ -78,52 +78,46 @@ class MainActivity : AppCompatActivity() {
         searchCustomerByPhoneNumber(phoneNumber)
 
         apiClient.getCustomerStoreCreditBalance(phoneNumber, object : Callback<List<Customer>> {
-            override fun onResponse(
-                call: Call<List<Customer>>,
-                response: Response<List<Customer>>
-            ) {
+            override fun onResponse(call: Call<List<Customer>>, response: Response<List<Customer>>) {
                 val customers = response.body()
                 if (customers != null && customers.isNotEmpty()) {
                     val customer = customers[0]
-
+                    val email = customer.email
                     val type = if (isAdd) "credit" else "debit"
                     val note = if (isAdd) "Store credit added" else "Store credit deducted"
 
-
-                    apiClient.insertNewTransaction(customer.id, amount.toString(), type, note, object : Callback<Transaction> {
-                        override fun onResponse(
-                            call: Call<Transaction>,
-                            response: Response<Transaction>
-                        ) {
-                            if (response.isSuccessful) {
-                                apiClient.getCustomerStoreCreditBalance(phoneNumber, object : Callback<List<Customer>> {
-                                    override fun onResponse(
-                                        call: Call<List<Customer>>,
-                                        response: Response<List<Customer>>
-                                    ) {
-                                        val updatedCustomers = response.body()
-                                        if (updatedCustomers != null && updatedCustomers.isNotEmpty()) {
-                                            val updatedCustomer = updatedCustomers[0]
-                                            val updatedStoreCredit = updatedCustomer.getStoreCreditBalance() ?: "0.0"
-                                            resultTextView.text = "Store credit balance updated to: $updatedStoreCredit"
-                                        } else {
-                                            resultTextView.text = "Failed to update store credit balance"
+                    if (email != null) {
+                        apiClient.insertNewTransaction(email, amount.toString(), type, note, object : Callback<Transaction> {
+                            override fun onResponse(call: Call<Transaction>, response: Response<Transaction>) {
+                                if (response.isSuccessful) {
+                                    apiClient.getCustomerStoreCreditBalance(phoneNumber, object : Callback<List<Customer>> {
+                                        override fun onResponse(call: Call<List<Customer>>, response: Response<List<Customer>>) {
+                                            val updatedCustomers = response.body()
+                                            if (updatedCustomers != null && updatedCustomers.isNotEmpty()) {
+                                                val updatedCustomer = updatedCustomers[0]
+                                                val updatedStoreCredit = updatedCustomer.getStoreCreditBalance() ?: "0.0"
+                                                resultTextView.text = "Store credit balance updated to: $updatedStoreCredit"
+                                            } else {
+                                                resultTextView.text = "Failed to update store credit balance"
+                                            }
                                         }
-                                    }
 
-                                    override fun onFailure(call: Call<List<Customer>>, t: Throwable) {
-                                        resultTextView.text = "Failed to update store credit balance (Error: $t)"
-                                    }
-                                })
-                            } else {
-                                resultTextView.text = "Failed to update store credit balance (Error ${response.code()})"
+                                        override fun onFailure(call: Call<List<Customer>>, t: Throwable) {
+                                            resultTextView.text = "Failed to update store credit balance (Error: $t)"
+                                        }
+                                    })
+                                } else {
+                                    resultTextView.text = "Failed to update store credit balance (Error ${response.code()})"
+                                }
                             }
-                        }
 
-                        override fun onFailure(call: Call<Transaction>, t: Throwable) {
-                            resultTextView.text = "Failed to update store credit balance (Error: $t)"
-                        }
-                    })
+                            override fun onFailure(call: Call<Transaction>, t: Throwable) {
+                                resultTextView.text = "Failed to update store credit balance (Error: $t)"
+                            }
+                        })
+                    } else {
+                        resultTextView.text = "Customer email not found"
+                    }
                 } else {
                     resultTextView.text = "Customer not found or no store credit balance available"
                 }
@@ -134,4 +128,5 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
 }

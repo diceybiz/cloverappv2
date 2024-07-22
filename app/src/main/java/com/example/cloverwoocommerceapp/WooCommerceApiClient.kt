@@ -51,11 +51,9 @@ class WooCommerceApiClient {
     }
 
 
-    fun insertNewTransaction(customerId: Int, amount: String, type: String, note: String, callback: Callback<Transaction>) {
-
-
-        val transaction = Transaction(amount = amount, type = type, note = note)
-        val call = retrofit.create(WooCommerceApi::class.java).insertNewTransaction(customerId, transaction)
+    fun insertNewTransaction(email: String, amount: String, type: String, note: String, callback: Callback<Transaction>) {
+        val transaction = Transaction(amount = amount, type = type, note = note, email = email)
+        val call = retrofit.create(WooCommerceApi::class.java).insertNewTransaction(transaction)
         call.enqueue(callback)
     }
 
@@ -63,8 +61,8 @@ class WooCommerceApiClient {
         @GET("customers")
         fun getCustomerByPhoneNumber(@Query("phone") phoneNumber: String?): Call<List<Customer>>
 
-        @POST("customers/{id}/wallet/transactions")
-        fun insertNewTransaction(@Path("id") customerId: Int, @Body transaction: Transaction): Call<Transaction>
+        @POST("wallet")
+        fun insertNewTransaction(@Body transaction: Transaction): Call<Transaction>
     }
     data class Transaction(
         @SerializedName("amount")
@@ -74,7 +72,10 @@ class WooCommerceApiClient {
         val note: String,
 
         @SerializedName("type")
-        val type: String
+        val type: String,
+
+        @SerializedName("email")
+        val email: String
     )
 
 
@@ -104,6 +105,8 @@ data class Customer(
     val firstName: String? = null,
     @SerializedName("last_name")
     val lastName: String? = null,
+    @SerializedName("email")
+    val email: String? = null,
     @SerializedName("meta_data")
     val metaData: List<WooCommerceApiClient.MetaData>? = null
 ) {
