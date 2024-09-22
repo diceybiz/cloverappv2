@@ -15,6 +15,7 @@ import com.example.cloverwoocommerceapp.WooCommerceApiClient.Transaction
 class MainActivity : AppCompatActivity() {
     private lateinit var apiClient: WooCommerceApiClient
     private lateinit var resultTextView: TextView
+    private lateinit var storeCreditTenderConnector: StoreCreditTenderConnector
     private lateinit var amountEditText: EditText
     private lateinit var addButton: Button
     private lateinit var subtractButton: Button
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         apiClient = WooCommerceApiClient()
+        storeCreditTenderConnector = StoreCreditTenderConnector(this)
 
         val searchButton: Button = findViewById(R.id.search_button)
         phoneNumberInput = findViewById(R.id.phone_number_input)
@@ -84,6 +86,9 @@ class MainActivity : AppCompatActivity() {
                     val customer = customers[0]
                     val email = customer.email
                     val type = if (isAdd) "credit" else "debit"
+                    val order = Order() // Create an Order object
+                    order.id = "order_id" // Set the order ID
+                    storeCreditTenderConnector.processStoreCreditPayment(order, (amount * 100).toLong()) // Process the payment
                     val note = if (isAdd) "Store credit added" else "Store credit deducted"
 
                     if (email != null) {
